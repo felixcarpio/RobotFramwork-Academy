@@ -1,58 +1,29 @@
 *** Settings ***
 Documentation    To validate the Login form
 Library    SeleniumLibrary
-Library    Collections
 Library    ../customLibraries/Shop.py
 Test Setup       open the browser with the Mortage payment url
-#Test Teardown    Close Browser
-Resource    resource.robot
+Test Teardown    Close Browser session
+Resource    ../Pages/Generic.robot
+Resource    ../Pages/LandingPage.robot
+Resource    ../Pages/ShopPage.robot
 
 
 *** Variables ***
-${Error_Massage_Login}      css:.alert-danger
-${Shop_page_load}          css:.nav-link
+@{listofProducts}           Blackberry      Nokia Edge
 
 *** Test Cases ***
-#Validate Unsuccesful Login
-
-    #Fill the login Form     ${user_name}     ${invalid_password}
-    #wait until element is located in the page       ${Error_Massage_Login}
+Validate Unsuccesful Login
+    LandingPage.Fill the login Form     ${user_name}     ${invalid_password}
+    LandingPage.wait until element is located in the page
+    LandingPage.verify error message is correct
 
 Validate Cards display in the Shopping Page
-    Fill the login Form     ${user_name}     ${valid_password}
-    wait until element is located in the page       ${Shop_page_load}
-    Verify Card tittles in the Shop page
-    hello world
-    Select the Card     Blackberry
+    LandingPage.Fill the login Form     ${user_name}     ${valid_password}
+    ShopPage.wait until element is located in the page
+    ShopPage.Verify Card tittles in the Shop page
+    add items to cart and checkout      ${listofproducts}
+    #Select the Card     Nokia Edge
 
-*** Keywords ***
-
-Fill the login Form
-    [Arguments]     ${username}     ${password}
-    Input Text      id:username     ${username}
-    Input Password  id:password     ${password}
-    Click Button    signInBtn
-
-wait until element is located in the page
-    [Arguments]    ${element}
-    wait until element is visible   ${element}
-
-Verify Card tittles in the Shop page
-    @{expectedList} =  Create List    iphone X     Samsung Note 8      Nokia Edge      Blackberry
-    ${elements} =   Get WebElements   css:.card-title
-    @{actualList} =     Create List
-    FOR     ${element}      IN      @{elements}
-            Log     ${element.text}
-            Append to List  ${actualList}   ${element.text}
-    END
-    lists should be equal    ${expectedList}        ${actualList}
-
-Select the Card
-    [Arguments]    ${cardName}
-    ${elements} =   Get WebElements   css:.card-title
-    ${index} =  Set Variable    1
-    FOR     ${element}      IN      @{elements}
-             Exit For Loop If   '${cardName}' == '${element.text}'
-             ${index} =    Evaluate  ${index} + 1
-    END
-    Click Button    xpath:(//*[@class='card-footer'])[${index}]/button
+Select the Form and navigate to Child window
+    LandingPage.Fill the Login Details and Login Form

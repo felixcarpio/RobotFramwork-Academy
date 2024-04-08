@@ -14,6 +14,7 @@ ${url}                  https://rahulshettyacademy.com/loginpagePractise/
 *** Keywords ***
 open the browser with the Mortage payment url
     Open Browser    ${url}      chrome
+    maximize browser window
 
 Close Browser session
     Close Browser
